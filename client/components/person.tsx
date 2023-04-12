@@ -20,7 +20,7 @@ import Button from './button';
 import { useGym } from '../hooks/useGym';
 import { Gym } from '../utils/types/gym';
 import { useUser } from '../hooks/useUser';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from 'react-query';
 import api from '../utils/axiosStore';
 import { useAuth } from '../utils/context';
 import * as Haptics from 'expo-haptics';

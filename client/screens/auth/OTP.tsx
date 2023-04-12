@@ -9,7 +9,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import Button from '../../components/button';
 import api from '../../utils/axiosStore';
 
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from 'react-query';
 import { setItemAsync } from 'expo-secure-store';
 import { useAuth } from '../../utils/context';
 
@@ -65,7 +65,7 @@ export default function OTPScreen({ navigation, route }) {
     async (data: z.infer<typeof OTPSchema>) => {
       try {
         return await api.post(
-          '/auth/verificationcode',
+          '/authentication.verifyOTP',
           {
             phoneNumber: phoneNumber,
             verificationCode: data.otp,
@@ -77,6 +77,7 @@ export default function OTPScreen({ navigation, route }) {
           }
         );
       } catch (error) {
+        console.log(error);
         setIncorrectCode(true);
       }
     },

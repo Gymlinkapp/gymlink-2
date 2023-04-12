@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery } from 'react-query';
 import { Chat } from '../screens/Chats';
 import api from '../utils/axiosStore';
 import { User } from '../utils/users';

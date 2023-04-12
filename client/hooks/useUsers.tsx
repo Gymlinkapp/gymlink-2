@@ -1,11 +1,12 @@
 import axios from 'axios';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery } from 'react-query';
 import api from '../utils/axiosStore';
 import { User } from '../utils/users';
 
 const fetchUsers = async (token: string) => {
-  const { data } = await api.get(`/users/getNearByUsers?token=${token}`);
-  return data;
+  // const { data } = await api.get(`/users/getNearByUsers?token=${token}`);
+  const { data } = await api.get(`/users.all`);
+  return data.result.data;
 };
 
 const useUsers = (token: string) => {

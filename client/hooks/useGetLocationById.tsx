@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery } from 'react-query';
 import api from '../utils/axiosStore';
 import { User } from '../utils/users';
 import { Gym } from '../utils/types/gym';

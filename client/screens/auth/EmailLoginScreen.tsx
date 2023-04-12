@@ -13,7 +13,7 @@ import {
 import { z } from 'zod';
 import Button from '../../components/button';
 import { COLORS } from '../../utils/colors';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from 'react-query';
 import { setItemAsync } from 'expo-secure-store';
 import { useAuth } from '../../utils/context';
 const userLoginSchema = z.object({

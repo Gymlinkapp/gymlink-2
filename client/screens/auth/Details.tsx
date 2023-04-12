@@ -12,7 +12,7 @@ import {
   StyleSheet,
   Modal,
 } from 'react-native';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from 'react-query';
 import { z } from 'zod';
 import Button from '../../components/button';
 import { COLORS } from '../../utils/colors';
@@ -112,7 +112,7 @@ export default function InitialUserDetails({ route, navigation }) {
     async (data: z.infer<typeof userDetailsSchema>) => {
       try {
         return await api.post(
-          '/auth/details',
+          '/authentication.userInitialDetails',
           {
             phoneNumber: phoneNumber,
             firstName: data.firstName,
@@ -139,7 +139,7 @@ export default function InitialUserDetails({ route, navigation }) {
       onSuccess: async (data) => {
         if (data) {
           try {
-            await setItemAsync('token', data.data.token);
+            await setItemAsync('token', data.data.result.data.token);
             queryClient.invalidateQueries('user');
             setToken(data.data.token);
           } catch (error) {

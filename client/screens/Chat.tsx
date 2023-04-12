@@ -14,7 +14,7 @@ import { useChat } from '../hooks/useChat';
 import { keyboardVerticalOffset } from '../utils/ui';
 import { User } from '../utils/users';
 import { Message } from './Chats';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from 'react-query';
 import Loading from '../components/Loading';
 import { TouchableOpacity } from 'react-native';
 import { CaretLeft } from 'phosphor-react-native';

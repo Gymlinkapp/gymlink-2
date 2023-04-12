@@ -4,12 +4,17 @@ import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { Twilio } from 'twilio';
+import { decode } from 'jsonwebtoken';
+import { JWT } from '../types/JWT';
 
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const client = new Twilio(accountSid, authToken);
 
 const prisma = new PrismaClient();
+const randomVerificationCode = () => {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+};
 
 export const authenticationRouter = t.router({
   signin: t.procedure
@@ -58,16 +63,11 @@ export const authenticationRouter = t.router({
       })
     )
     .mutation(async ({ input }) => {
-      console.log('hi');
-      const randomVerificationCode = () => {
-        return Math.floor(100000 + Math.random() * 900000).toString();
-      };
-
-      console.log('code', randomVerificationCode());
+      const code = randomVerificationCode();
 
       try {
         await client.messages.create({
-          body: `Your verification code is ${randomVerificationCode()}`,
+          body: `Your verification code is ${code}`,
           from: process.env.TWILIO_PHONE_NUMBER as string,
           to: `+1${input.phoneNumber}`,
         });
@@ -102,7 +102,7 @@ export const authenticationRouter = t.router({
               lastName: '',
               tags: [],
               bio: '',
-              verificationCode: randomVerificationCode(),
+              verificationCode: code,
 
               authSteps: 1,
             },
@@ -121,7 +121,7 @@ export const authenticationRouter = t.router({
             id: user.id,
           },
           data: {
-            verificationCode: randomVerificationCode(),
+            verificationCode: code,
           },
         });
 
@@ -129,6 +129,113 @@ export const authenticationRouter = t.router({
           message: 'SMS Sent',
           authStep: existingUser.authSteps,
           code: existingUser.verificationCode,
+        };
+      } catch (error) {
+        console.log(error);
+        throw new Error('error');
+      }
+    }),
+
+  verifyOTP: t.procedure
+    .input(
+      z.object({
+        phoneNumber: z.string(),
+        verificationCode: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      console.log('phone', input.phoneNumber);
+      console.log('recieved code', input.verificationCode);
+      const user = await prisma.user.findUnique({
+        where: {
+          phoneNumber: input.phoneNumber,
+        },
+      });
+
+      if (!user) throw new Error('User not found');
+      if (user.verificationCode !== input.verificationCode)
+        throw new Error('Incorrect verification code');
+      if (!user.verified || !user.email) {
+        const updatedUser = await prisma.user.update({
+          where: {
+            id: user.id,
+          },
+          data: {
+            authSteps: 2,
+            verified: true,
+          },
+        });
+      }
+
+      const token = jwt.sign(
+        { email: user.email },
+        process.env.JWT_SECRET as string,
+        {
+          expiresIn: '1d',
+        }
+      );
+      const signedInUser = await prisma.user.update({
+        where: {
+          id: user.id,
+        },
+        data: {
+          tempJWT: token,
+        },
+      });
+
+      return {
+        token: signedInUser.tempJWT,
+      };
+    }),
+  userInitialDetails: t.procedure
+    .input(
+      z.object({
+        phoneNumber: z.string(),
+        firstName: z.string(),
+        lastName: z.string(),
+        email: z.string(),
+        bio: z.string(),
+        age: z.number(),
+        gender: z.string(),
+        race: z.string(),
+        longitude: z.number(),
+        latitude: z.number(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      console.log(input.firstName);
+      try {
+        const user = await prisma.user.findUnique({
+          where: {
+            phoneNumber: input.phoneNumber,
+          },
+        });
+
+        if (!user) throw new Error('User not found');
+        if (!user.verified) throw new Error('User not verified');
+
+        const updatedUser = await prisma.user.update({
+          where: {
+            phoneNumber: input.phoneNumber,
+          },
+          data: {
+            firstName: input.firstName,
+            lastName: input.lastName,
+            email: input.email,
+            bio: input.bio,
+            age: input.age,
+            gender: input.gender,
+            race: input.race,
+            longitude: input.longitude,
+            authSteps: 3,
+            latitude: input.latitude,
+          },
+        });
+
+        return {
+          message: 'User details updated',
+          authStep: updatedUser.authSteps,
+          token: updatedUser.tempJWT,
         };
       } catch (error) {
         console.log(error);

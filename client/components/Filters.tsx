@@ -18,7 +18,7 @@ import { useAuth } from '../utils/context';
 import { X } from 'phosphor-react-native';
 import Button from './button';
 import { BlurView } from 'expo-blur';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from 'react-query';
 import api from '../utils/axiosStore';
 
 export default function Filters() {

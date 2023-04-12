@@ -6,7 +6,7 @@ import {
   User,
 } from 'phosphor-react-native';
 import { SafeAreaView, Text, View } from 'react-native';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation } from 'react-query';
 import Button from '../components/button';
 import { COLORS } from '../utils/colors';
 import api from '../utils/axiosStore';

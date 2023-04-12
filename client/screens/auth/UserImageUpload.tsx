@@ -16,7 +16,7 @@ import {
 import Button from '../../components/button';
 import { Camera, X } from 'phosphor-react-native';
 import { COLORS } from '../../utils/colors';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation } from 'react-query';
 import useToken from '../../hooks/useToken';
 import { useAuth } from '../../utils/context';
 import AuthLayout from '../../layouts/AuthLayout';
@@ -36,7 +36,7 @@ export default function UserImageUpload({ navigation, route }) {
   const { token } = useAuth();
 
   const continueToNextScreen = async () => {
-    await api.post('/users/authSteps', { token, authSteps: 4 });
+    await api.post('/users.updateAuthSteps', { token, authSteps: 4 });
   };
 
   const addImage = async () => {

@@ -16,7 +16,7 @@ import {
   checkIfEmptyDays,
 } from '../../utils/split';
 import * as Haptics from 'expo-haptics';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation } from 'react-query';
 import api from '../../utils/axiosStore';
 import Button from '../../components/button';
 import { useAuth } from '../../utils/context';
@@ -63,7 +63,7 @@ export default function CreateSplit({ navigation, route }) {
           );
           return;
         }
-        return await api.post('/users/split', {
+        return await api.post('/users.createSplit', {
           split: data,
           token,
           authSteps: route.params?.authStep ? route.params?.authStep : 6,
@@ -244,7 +244,7 @@ export default function CreateSplit({ navigation, route }) {
           className='flex-1'
           onPress={async () => {
             try {
-              await api.post(`/users/authSteps`, {
+              await api.post(`/users.updateAuthStep`, {
                 token,
                 authSteps: 6,
               });

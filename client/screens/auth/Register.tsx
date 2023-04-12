@@ -12,7 +12,7 @@ import PhoneInput from 'react-native-phone-number-input';
 import { COLORS } from '../../utils/colors';
 import Button from '../../components/button';
 import api from '../../utils/axiosStore';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation } from 'react-query';
 import axios from 'axios';
 import { useState } from 'react';
 import { trpc } from '../../utils/trpc';
@@ -42,7 +42,7 @@ export default function RegisterScreen({ navigation }) {
       setPhoneNumber(phoneNumber);
       try {
         return await api.post(
-          '/auth/sendsms',
+          '/authentication.sendOTP',
           {
             phoneNumber: phoneNumber,
           },
@@ -61,22 +61,17 @@ export default function RegisterScreen({ navigation }) {
         if (data) {
           navigation.navigate('OTPScreen', {
             code: data.data.code,
-            phoneNumber: data.data.phoneNumber,
+            phoneNumber: phoneNumber,
           });
         }
       },
     }
   );
-  const mutation = trpc.authentication.sendOTP.useMutation();
   const onSubmit = async (data: z.infer<typeof phoneNumberSchema>) => {
-    // return await sendSMS.mutateAsync(data.callingCode + data.phoneNumber);
-    mutation.mutate({
-      phoneNumber: data.callingCode + data.phoneNumber,
-    });
-
-    if (mutation.error) {
-      console.log(mutation.error);
-    }
+    return await sendSMS.mutateAsync(data.callingCode + data.phoneNumber);
+    // mutation.mutate({
+    //   phoneNumber: data.callingCode + data.phoneNumber,
+    // });
   };
 
   return (

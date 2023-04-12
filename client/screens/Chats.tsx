@@ -11,7 +11,7 @@ import {
   Swipeable,
   TouchableOpacity as RNGHOpacity,
 } from 'react-native-gesture-handler';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from 'react-query';
 import api from '../utils/axiosStore';
 import * as Haptics from 'expo-haptics';
 

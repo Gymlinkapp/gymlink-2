@@ -23,7 +23,7 @@ import {
   PaperPlaneRight,
   X,
 } from 'phosphor-react-native';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from 'react-query';
 import api from '../utils/axiosStore';
 import Split from '../components/Split';
 import { WeekSplit } from '../utils/split';

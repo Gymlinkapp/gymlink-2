@@ -24,7 +24,7 @@ import {
   X,
 } from 'phosphor-react-native';
 import { truncate } from '../utils/ui';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from 'react-query';
 import api from '../utils/axiosStore';
 import EmptyScreen from '../components/EmptyScreen';
 import {

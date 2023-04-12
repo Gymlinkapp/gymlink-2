@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../utils/context';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation } from 'react-query';
 import api from '../utils/axiosStore';
 import { SafeAreaView, TextInput, View } from 'react-native';
 import { TouchableOpacity } from 'react-native';
