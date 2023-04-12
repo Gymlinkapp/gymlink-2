@@ -1,7 +1,7 @@
 // Import our tRPC instance
 import { z } from 'zod';
 import { t } from '../trpc';
-import { Gym, PrismaClient, User } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { decode } from 'jsonwebtoken';
 import { JWT } from '../types/JWT';
 
