@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "dev": "nodemon src/index.ts"
+    "dev": "nodemon src/index.ts",
+    "start": "ts-node src/index.ts"
   },
   "dependencies": {
     "@faker-js/faker": "^7.6.0",
