@@ -62,6 +62,7 @@ model Gym {
   id         String   @id @default(uuid())
   name       String
   location   Location @relation(fields: [locationId], references: [id])
+  radius     Float    @default(5)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   users      User[]
@@ -69,10 +70,11 @@ model Gym {
 }
 
 model Location {
-  id   String @id @default(uuid())
-  lat  Float
-  long Float
-  Gym  Gym[]
+  id     String @id @default(uuid())
+  lat    Float
+  long   Float
+  radius Float
+  Gym    Gym[]
 }
 
 model Split {

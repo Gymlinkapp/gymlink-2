@@ -1,5 +1,6 @@
 import { Sex, faker } from '@faker-js/faker';
 import { Prisma, PrismaClient, User } from '@prisma/client';
+import { Filter } from '../src/routers/users';
 
 const prisma = new PrismaClient();
 
@@ -10,6 +11,94 @@ function randomGender(): Sex {
 
 const generateEmail = (firstName: string, lastName: string) => {
   return `${firstName.toLowerCase()}${lastName.toLowerCase()}@gmail.com`;
+};
+
+const generateRandomFilters = (filterType: string) => {
+  const filterTypes = [
+    {
+      name: 'goingToday',
+      values: [true, false],
+    },
+    {
+      name: 'workoutType',
+      values: ['cardio', 'bench', 'squat'],
+    },
+    {
+      name: 'skillLevel',
+      values: ['low', 'medium', 'high'],
+    },
+    {
+      name: 'goals',
+      values: ['weightLoss', 'muscleGain', 'toning'],
+    },
+  ];
+  // generate random filters
+  const filters: Filter[] = [];
+
+  filterTypes.forEach((ft) => {
+    if (ft.name === filterType) {
+      const randomIndex = Math.floor(Math.random() * filterTypes.values.length);
+      if (typeof ft.values[randomIndex] === 'boolean') {
+        filters.push({
+          filter: ft.name,
+          value: ft.values[randomIndex] as boolean,
+        });
+      } else {
+        filters.push({
+          filter: ft.name,
+          value: ft.values[randomIndex] as string,
+        });
+      }
+    }
+  });
+
+  return filters;
+};
+
+const generateRandomLocation = () => {
+  type Coords = {
+    lat: number;
+    long: number;
+  };
+
+  const coords: Coords[] = [
+    {
+      long: -82.963905,
+      lat: 42.308211,
+    },
+    {
+      long: -83.284158,
+      lat: 42.694791,
+    },
+    {
+      long: -97.74306,
+      lat: 30.26715,
+    },
+    {
+      long: -0.127758,
+      lat: 51.507351,
+    },
+    {
+      long: -82.95850771080275,
+      lat: 42.29926426331974,
+    },
+    {
+      long: -82.97250771080274,
+      lat: 42.29926426331974,
+    },
+    {
+      long: -82.96550771080275,
+      lat: 42.29326426331974,
+    },
+  ];
+
+  const randomIndex = Math.floor(Math.random() * coords.length);
+  return coords[randomIndex] as Coords;
+};
+
+const generateRandomPhoneNumber = () => {
+  const randomId = Math.floor(Math.random() * 1000000000);
+  return `+1${randomId}`;
 };
 
 function getRandomProfilePicture() {
@@ -31,15 +120,14 @@ function generateRandomUserData(): Prisma.UserCreateInput {
     bio: faker.lorem.sentence(),
     gender,
     age: Number(faker.random.numeric(2)),
-    tags: {
-      create: [
-        { name: 'Shoulder Press' },
-        { name: 'Gobblin Squats' },
-        { name: 'Dips' },
-      ],
-    },
+    tags: [
+      faker.lorem.word(),
+      faker.lorem.word(),
+      faker.lorem.word(),
+      faker.lorem.word(),
+    ],
     authSteps: 7,
-    phoneNumber: faker.phone.phoneNumber(),
+    phoneNumber: generateRandomPhoneNumber(),
     verified: true,
     isBot: true,
     images: [
@@ -58,26 +146,21 @@ function generateRandomUserData(): Prisma.UserCreateInput {
         sunday: ['chest', 'back'],
       },
     },
-    filterGender: {
-      create: [],
-    },
-    filterGoals: {
-      create: [],
-    },
-    filterSkillLevel: {
-      create: [],
-    },
-    filterWorkout: {
-      create: [],
-    },
+    filterGender: [],
+    filterGoals: generateRandomFilters('goals').map((f) => f.value),
+    filterSkillLevel: generateRandomFilters('skillLevel').map((f) => f.value),
+    filterWorkout: generateRandomFilters('workoutType').map((f) => f.value),
     filterGoingToday: false,
+    longitude: generateRandomLocation().long,
+    latitude: generateRandomLocation().lat,
     gym: {
       create: {
         name: 'Fit4Less',
         location: {
           create: {
-            lat: 42.300916870848894,
-            long: -82.97919754434378,
+            radius: 5,
+            lat: generateRandomLocation().lat,
+            long: generateRandomLocation().long,
           },
         },
       },
@@ -94,7 +177,7 @@ async function createUser(prisma: any, userData: Prisma.UserCreateInput) {
 }
 
 async function main() {
-  const numberOfUsers = 10; // Change this value to create more or fewer users
+  const numberOfUsers = 20; // Change this value to create more or fewer users
 
   for (let i = 0; i < numberOfUsers; i++) {
     const randomUserData = generateRandomUserData();
@@ -112,11 +195,13 @@ async function main() {
       password: 'password',
       bio: faker.lorem.sentence(),
       age: 21,
-      filterGender: { create: [] },
-      filterGoals: { create: [] },
-      filterSkillLevel: { create: [] },
-      filterWorkout: { create: [] },
       filterGoingToday: false,
+      filterGender: [],
+      filterGoals: ['weightLoss', 'muscleGain', 'toning'],
+      filterSkillLevel: ['beginner', 'intermediate', 'advanced'],
+      filterWorkout: ['cardio', 'strength', 'flexibility'],
+      longitude: generateRandomLocation().long,
+      latitude: generateRandomLocation().lat,
       images: [
         getRandomProfilePicture(),
         getRandomProfilePicture(),
@@ -127,6 +212,7 @@ async function main() {
           name: 'Fit4Less',
           location: {
             create: {
+              radius: 5,
               lat: 42.300916870848894,
               long: -82.97919754434378,
             },
@@ -134,13 +220,11 @@ async function main() {
         },
       },
 
-      tags: {
-        create: [
-          { name: 'Shoulder Press' },
-          { name: 'Gobblin Squats' },
-          { name: 'Dips' },
-        ],
-      },
+      tags: [
+        { name: 'Shoulder Press' },
+        { name: 'Gobblin Squats' },
+        { name: 'Dips' },
+      ],
       split: {
         create: {
           monday: ['chest', 'back'],
@@ -153,7 +237,7 @@ async function main() {
         },
       },
       authSteps: 7,
-      phoneNumber: faker.phone.phoneNumber(),
+      phoneNumber: generateRandomPhoneNumber(),
       verified: true,
       isBot: true,
     },
