@@ -16,6 +16,8 @@ const randomVerificationCode = () => {
   return Math.floor(100000 + Math.random() * 900000).toString();
 };
 
+const code = randomVerificationCode();
+
 export const authenticationRouter = t.router({
   signin: t.procedure
     .input(
@@ -63,8 +65,7 @@ export const authenticationRouter = t.router({
       })
     )
     .mutation(async ({ input }) => {
-      const code = randomVerificationCode();
-
+      console.log('first code', code);
       try {
         await client.messages.create({
           body: `Your verification code is ${code}`,
@@ -108,13 +109,14 @@ export const authenticationRouter = t.router({
             },
           });
 
+          console.log('saved code', newUser.verificationCode);
+
           return {
             message: 'SMS Sent',
             authStep: newUser.authSteps,
             code: newUser.verificationCode,
           };
         }
-        console.log('user', user);
 
         const existingUser = await prisma.user.update({
           where: {
@@ -124,6 +126,11 @@ export const authenticationRouter = t.router({
             verificationCode: code,
           },
         });
+
+        console.log(
+          'saved code on existing user',
+          existingUser.verificationCode
+        );
 
         return {
           message: 'SMS Sent',
@@ -144,8 +151,8 @@ export const authenticationRouter = t.router({
       })
     )
     .mutation(async ({ input }) => {
-      console.log('phone', input.phoneNumber);
-      console.log('recieved code', input.verificationCode);
+      console.log('code from screen', input.verificationCode);
+      console.log('number from screen', input.phoneNumber);
       const user = await prisma.user.findUnique({
         where: {
           phoneNumber: input.phoneNumber,
@@ -153,8 +160,10 @@ export const authenticationRouter = t.router({
       });
 
       if (!user) throw new Error('User not found');
-      if (user.verificationCode !== input.verificationCode)
+      if (user.verificationCode !== input.verificationCode) {
+        console.log('wrong');
         throw new Error('Incorrect verification code');
+      }
       if (!user.verified || !user.email) {
         const updatedUser = await prisma.user.update({
           where: {
@@ -165,6 +174,11 @@ export const authenticationRouter = t.router({
             verified: true,
           },
         });
+
+        return {
+          message: 'User verified',
+          authStep: updatedUser.authSteps,
+        };
       }
 
       const token = jwt.sign(
@@ -203,13 +217,15 @@ export const authenticationRouter = t.router({
       })
     )
     .mutation(async ({ input }) => {
-      console.log(input.firstName);
+      console.log('input', input);
       try {
         const user = await prisma.user.findUnique({
           where: {
             phoneNumber: input.phoneNumber,
           },
         });
+
+        console.log('user', user);
 
         if (!user) throw new Error('User not found');
         if (!user.verified) throw new Error('User not verified');
