@@ -24,6 +24,8 @@ const AuthContext = createContext(
     setFilters: React.Dispatch<React.SetStateAction<Filter[]>>;
     feed: User[];
     setFeed: React.Dispatch<React.SetStateAction<User[]>>;
+    phoneNumber: string;
+    setPhoneNumber: React.Dispatch<React.SetStateAction<string>>;
   }
 );
 
@@ -37,6 +39,7 @@ const AuthProvider = ({ children }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [filters, setFilters] = useState<Filter[]>(defaultFilters);
   const [feed, setFeed] = useState<User[]>([]);
+  const [phoneNumber, setPhoneNumber] = useState('');
 
   return (
     <AuthContext.Provider
@@ -57,6 +60,8 @@ const AuthProvider = ({ children }) => {
         setFilters,
         feed,
         setFeed,
+        phoneNumber,
+        setPhoneNumber,
       }}
     >
       {children}

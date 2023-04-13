@@ -17,10 +17,9 @@ let OTPSchema = z.object({
   otp: z.string().min(6).max(6),
 });
 export default function OTPScreen({ navigation, route }) {
-  const { phoneNumber } = route.params;
+  const [number, setNumber] = useState<string>('');
   const [incorrectCode, setIncorrectCode] = useState<Boolean>(false);
-  console.log('phoneNumber', phoneNumber);
-  const { setIsVerified, setToken } = useAuth();
+  const { setIsVerified, setToken, phoneNumber } = useAuth();
   const queryClient = useQueryClient();
 
   const {
@@ -39,7 +38,7 @@ export default function OTPScreen({ navigation, route }) {
     async () => {
       try {
         return await api.post(
-          '/auth/sendsms',
+          '/trpc/authentication.sendSMS',
           {
             phoneNumber: phoneNumber,
           },

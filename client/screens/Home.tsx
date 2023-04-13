@@ -9,7 +9,7 @@ import { BlurView } from 'expo-blur';
 import Filters from '../components/Filters';
 import { FilterType } from '../utils/types/filter';
 
-function splitArrayIntoColumns(array: any[], numColumns: number) {
+function splitArrayIntoColumns(array: any[] = [], numColumns: number) {
   const columnArrays = Array.from({ length: numColumns }, () => []);
   array.forEach((item, index) => {
     columnArrays[index % numColumns].push(item);
@@ -112,6 +112,7 @@ export default function HomeScreen({ navigation, route }) {
           scrollFactor: scrollFactors[index],
         };
       });
+      setColumnData(columnData);
 
       setTimeout(() => {
         flatListRef.current?.scrollToOffset({
@@ -120,7 +121,6 @@ export default function HomeScreen({ navigation, route }) {
         });
         setHasInitialScrolled(true);
       }, 500);
-      setColumnData(columnData);
     }
   }, [isLoading, users, feed, user]);
 

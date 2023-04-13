@@ -5,7 +5,9 @@ import { User } from '../utils/users';
 
 const fetchUsers = async (token: string) => {
   // const { data } = await api.get(`/users/getNearByUsers?token=${token}`);
-  const { data } = await api.get(`/users.all`);
+  const { data } = await api.post(`/users.getNearByUsers`, {
+    token,
+  });
   return data.result.data;
 };
 
